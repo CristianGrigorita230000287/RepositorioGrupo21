@@ -70,14 +70,21 @@
                     </ol>
                     <div class="card mb-4">
                         <div class="card-body">
-                            <form>
+                            <form >
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Nome da Tarefa</label>
                                     <input class="form-control" type="text" aria-label="default input example">
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Categoria</label>
-                                    <input class="form-control" type="text" aria-label="default input example">
+                                    <a type="button" class="btn btn-outline-success btn-sm" href="/Home/Criar_Tarefa"><i class="fa-solid fa-plus"></i></a>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected></option>
+                                        <option value="1">Categoria1</option>
+                                        <option value="2">Categoria2</option>
+                                        <option value="3">Categoria3</option>
+                                        <option value="4">Categoria4</option>
+                                    </select>
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Prioridade</label>
@@ -88,10 +95,6 @@
                                         <option value="3">Muito Importante</option>
                                         <option value="4">Urgente</option>
                                     </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="exampleInputEmail1" class="form-label">Comentario</label>
-                                    <input class="form-control" type="text" aria-label="default input example">
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submeter</button>
                             </form>
