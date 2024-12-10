@@ -4,12 +4,13 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
 
-<h4>Tarefa</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Editar Tarefa</h1>
+    <ol class="breadcrumb mb-4">
+    </ol>
+    <div class="card mb-4">
+        <div class="card-body">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -48,15 +49,16 @@
                 <input asp-for="DataLimite" class="form-control" />
                 <span asp-validation-for="DataLimite" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Guardar" class="btn btn-success" />
             </div>
         </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div>
+        <a asp-action="Index" class="btn btn-outline-primary">Voltar</a>
+    </div>
 </div>
 
 @section Scripts {
