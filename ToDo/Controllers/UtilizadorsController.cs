@@ -26,7 +26,7 @@ namespace ToDo.Controllers
         }
 
         // GET: Utilizadors/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
             {
@@ -54,7 +54,7 @@ namespace ToDo.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Nome,Email,UtilizadorPassword,UtilizadorAdmin,UltimoLogin,DataCriacao")] Utilizador utilizador)
+        public async Task<IActionResult> Create([Bind("PrimeiroNome,Apelido,Email,UtilizadorAdmin,UltimoLogin,DataCriacao")] Utilizador utilizador)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace ToDo.Controllers
         }
 
         // GET: Utilizadors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
@@ -86,7 +86,7 @@ namespace ToDo.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Email,UtilizadorPassword,UtilizadorAdmin,UltimoLogin,DataCriacao")] Utilizador utilizador)
+        public async Task<IActionResult> Edit(string id, [Bind("Id,PrimeiroNome,Apelido,Email,UtilizadorAdmin,UltimoLogin,DataCriacao")] Utilizador utilizador)
         {
             if (id != utilizador.Id)
             {
@@ -117,7 +117,7 @@ namespace ToDo.Controllers
         }
 
         // GET: Utilizadors/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string? id)
         {
             if (id == null)
             {
@@ -137,7 +137,7 @@ namespace ToDo.Controllers
         // POST: Utilizadors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var utilizador = await _context.Utilizador.FindAsync(id);
             if (utilizador != null)
@@ -149,7 +149,7 @@ namespace ToDo.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UtilizadorExists(int id)
+        private bool UtilizadorExists(string id)
         {
             return _context.Utilizador.Any(e => e.Id == id);
         }

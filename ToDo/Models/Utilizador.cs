@@ -1,11 +1,11 @@
-﻿namespace ToDo.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace ToDo.Models
 {
-    public class Utilizador
+    public class Utilizador : IdentityUser
     {
-        public int Id { get; set; }
-        public string Nome { get; set; }
-        public string Email { get; set; }
-        public string UtilizadorPassword { get; set; }
+        public string PrimeiroNome { get; set; }
+        public string Apelido { get; set; }
         public int UtilizadorAdmin {  get; set; }
         public DateTime UltimoLogin { get; set; }
         public DateTime DataCriacao { get; set; }

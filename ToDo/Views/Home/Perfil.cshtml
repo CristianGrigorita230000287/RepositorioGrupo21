@@ -1,7 +1,12 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using Microsoft.AspNetCore.Identity;
+@using System.Security.Claims;
+@inject UserManager<Utilizador> userManager;
+
 @{
+    var utilizador = await userManager.GetUserAsync(User);
+    var primeiroNome = User?.Claims.FirstOrDefault(c => c.Type == "PrimeiroNome")?.Value;
+    var apelido = User?.Claims.FirstOrDefault(c => c.Type == "Apelido")?.Value;
+    var email = User?.Claims.FirstOrDefault(c => c.Type == "Email")?.Value;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -31,17 +36,7 @@
         </form>
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
-                   aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="/Home/Perfil">Perfil</a></li>
-                    <li>
-                        <hr class="dropdown-divider" />
-                    </li>
-                    <li><a class="dropdown-item" href="#!">Sair</a></li>
-                </ul>
-            </li>
+            <partial name="_LoginParcial" />
         </ul>
     </nav>
     <div id="layoutSidenav">
@@ -57,8 +52,15 @@
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    Nome do Utilizador
+                    @if (primeiroNome != null && apelido != null)
+                    {
+                        <div class="small">Logado como:</div>
+                        @($"{primeiroNome} {apelido}")
+                    }
+                    else
+                    {
+                        <div class="small">Não está logado.</div>
+                    }
                 </div>
             </nav>
         </div>
@@ -69,8 +71,8 @@
                 <div class="container-fluid px-4">
                     <div class="card mb-4">
                         <div class="card-body">
-                            <p class="fw-semibold">Nome: </p>
-                            <p class="fw-semibold">Email: </p>
+                            <p class="fw-semibold">Nome: @primeiroNome @apelido</p>
+                            <p class="fw-semibold">Email: @email</p>
                         </div>
                     </div>
                 </div>

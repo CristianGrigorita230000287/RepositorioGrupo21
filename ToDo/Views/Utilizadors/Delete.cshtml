@@ -12,10 +12,16 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nome)
+            @Html.DisplayNameFor(model => model.PrimeiroNome)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nome)
+            @Html.DisplayFor(model => model.PrimeiroNome)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Apelido)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Apelido)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Email)
@@ -24,10 +30,10 @@
             @Html.DisplayFor(model => model.Email)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UtilizadorPassword)
+            @Html.DisplayNameFor(model => model.PasswordHash)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UtilizadorPassword)
+            @Html.DisplayFor(model => model.PasswordHash)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.UtilizadorAdmin)
