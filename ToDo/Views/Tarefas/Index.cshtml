@@ -1,79 +1,121 @@
-﻿@model IEnumerable<ToDo.Models.Tarefa>
+﻿@model IEnumerable<ToDo.Models.Tarefa>  
 
 @{
     ViewData["Title"] = "Index";
 }
 
-                <div class="container-fluid px-4">
-                    <h1 class="mt-4">Tarefas</h1>
-                    <ol class="breadcrumb mb-4">
-                    </ol>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <a asp-action="Create" class="btn btn-success"><i class="fa-solid fa-plus"></i></a>
-                            <br />
-                            <br />
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.UtilizadorId)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Nome)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Prioridade)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.Estado)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.CategoriaId)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.DataCriacao)
-                                        </th>
-                                        <th>
-                                            @Html.DisplayNameFor(model => model.DataLimite)
-                                        </th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.UtilizadorId)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Nome)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Prioridade)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Estado)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.CategoriaId)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.DataCriacao)
-                                            </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.DataLimite)
-                                            </td>
-                                            <td>
-                                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning"><i class="fa-solid fa-pencil"></i></a> |
-                                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-
-                        </div>
-                    </div>
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Tarefas</h1>
+    <ol class="breadcrumb mb-4">
+    </ol>
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">Urgente</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    Fazer trabalho de TI
+                    <br />
+                    Fazer trabalho de TI
+                    <br />
+                    Fazer trabalho de TI
+                    <br />
+                    Fazer trabalho de TI
                 </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">Muito Importante</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">Importante</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    Fazer Almoço
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">Ainda pode esperar</div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <a asp-action="Create" class="btn btn-success"><i class="fa-solid fa-plus"></i></a>
+            <br />
+            <br />
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.UtilizadorId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Nome)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Prioridade)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estado)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CategoriaId)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DataCriacao)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DataLimite)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UtilizadorId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Nome)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Prioridade)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Estado)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoriaId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DataCriacao)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DataLimite)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning"><i class="fa-solid fa-pencil"></i></a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
