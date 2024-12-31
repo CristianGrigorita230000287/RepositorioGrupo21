@@ -22,6 +22,9 @@ namespace ToDo.Controllers
         // GET: Tarefas
         public async Task<IActionResult> Index()
         {
+            var tarefas = await _context.Tarefa
+            .Include(t => t.Categoria) // Inclui a categoria relacionada
+            .ToListAsync();
             return View(await _context.Tarefa.ToListAsync());
         }
 
@@ -46,12 +49,10 @@ namespace ToDo.Controllers
         // GET: Tarefas/Create
         public IActionResult Create()
         {
+            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
             return View();
         }
 
-        // POST: Tarefas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UtilizadorId,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
@@ -62,8 +63,13 @@ namespace ToDo.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            // Recarregar categorias em caso de erro de validação
+            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
             return View(tarefa);
         }
+
+
 
         // GET: Tarefas/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -78,6 +84,10 @@ namespace ToDo.Controllers
             {
                 return NotFound();
             }
+
+            // Preencher o ViewBag com as categorias disponíveis
+            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
+
             return View(tarefa);
         }
 
@@ -113,6 +123,10 @@ namespace ToDo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            // Recarregar o ViewBag caso haja erro de validação
+            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
+
             return View(tarefa);
         }
 

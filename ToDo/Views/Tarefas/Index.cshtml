@@ -71,7 +71,7 @@
                             @Html.DisplayNameFor(model => model.Estado)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.CategoriaId)
+                            Categoria
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.DataCriacao)
@@ -99,7 +99,7 @@
                                 @Html.DisplayFor(modelItem => item.Estado)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.CategoriaId)
+                                @item.Categoria.Nome
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DataCriacao)
