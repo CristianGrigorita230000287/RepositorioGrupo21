@@ -69,6 +69,9 @@ namespace ToDo.Controllers
                     await userManager.AddClaimAsync(utilizador, new Claim("Apelido", model.Apelido));
                     await userManager.AddClaimAsync(utilizador, new Claim("Email", model.Email));
 
+                    // Adiciona a role de Cliente ao novo utilizador:
+                    await userManager.AddToRoleAsync(utilizador, "Cliente");
+
                     return RedirectToAction("Login", "Conta");
                 }
                 else
@@ -96,7 +99,7 @@ namespace ToDo.Controllers
             {
                 var utilizador = await userManager.FindByNameAsync(model.Email);
 
-                if(utilizador == null)
+                if (utilizador == null)
                 {
                     ModelState.AddModelError("", "Email não encontrado!");
                     return View(model);
@@ -115,7 +118,7 @@ namespace ToDo.Controllers
             {
                 return RedirectToAction("VerificarEmail", "Conta");
             }
-            return View(new MudarPasswordViewModel { Email = username});
+            return View(new MudarPasswordViewModel { Email = username });
         }
 
         [HttpPost]

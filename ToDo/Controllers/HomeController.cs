@@ -31,11 +31,17 @@ namespace ToDo.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult Perfil()
         {
             return View();
         }
 
+        [Authorize]
+        public IActionResult Vista_Geral()
+        {
+            return View();
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

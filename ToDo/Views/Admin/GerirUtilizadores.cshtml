@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ToDo.Models.Utilizador>
+
+<h1>Gerenciar Usuários</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.PrimeiroNome @user.Apelido</td>
+                <td>@user.Email</td>
+                <td>
+                    <form asp-action="DeleteUser" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <button type="submit" class="btn btn-danger">Deletar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

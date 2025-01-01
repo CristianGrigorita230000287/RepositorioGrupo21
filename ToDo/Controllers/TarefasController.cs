@@ -23,9 +23,9 @@ namespace ToDo.Controllers
         public async Task<IActionResult> Index()
         {
             var tarefas = await _context.Tarefa
-            .Include(t => t.Categoria) // Inclui a categoria relacionada
-            .ToListAsync();
-            return View(await _context.Tarefa.ToListAsync());
+                .Include(t => t.Categoria) // Inclui a categoria relacionada
+                .ToListAsync();
+            return View(tarefas);
         }
 
         // GET: Tarefas/Details/5
@@ -37,6 +37,7 @@ namespace ToDo.Controllers
             }
 
             var tarefa = await _context.Tarefa
+                .Include(t => t.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (tarefa == null)
             {
@@ -53,6 +54,7 @@ namespace ToDo.Controllers
             return View();
         }
 
+        // POST: Tarefas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UtilizadorId,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
@@ -68,8 +70,6 @@ namespace ToDo.Controllers
             ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
             return View(tarefa);
         }
-
-
 
         // GET: Tarefas/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -139,6 +139,7 @@ namespace ToDo.Controllers
             }
 
             var tarefa = await _context.Tarefa
+                .Include(t => t.Categoria)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (tarefa == null)
             {

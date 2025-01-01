@@ -8,7 +8,6 @@
         public string? Prioridade { get; set; }
         public string? Estado { get; set; }
         public int? CategoriaId { get; set; }
-
         public Categoria? Categoria { get; set; }
         public DateTime? DataCriacao { get; set; }
         public DateTime? DataLimite { get; set; }
