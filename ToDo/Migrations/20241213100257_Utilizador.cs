@@ -14,7 +14,7 @@ namespace ToDo.Migrations
             migrationBuilder.AlterColumn<int>(
                 name: "UtilizadorId",
                 table: "Tarefa",
-                type: "int",
+                type: "nvarchar(450)",
                 nullable: true,
                 oldClrType: typeof(int),
                 oldType: "int");
@@ -280,8 +280,8 @@ namespace ToDo.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0,
-                oldClrType: typeof(int),
-                oldType: "int",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)",
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(

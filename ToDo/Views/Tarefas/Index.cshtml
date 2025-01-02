@@ -16,7 +16,7 @@
             <div class="card bg-danger text-white mb-4">
                 <div class="card-body">Urgente</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Urgente"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Urgente" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
@@ -27,7 +27,7 @@
             <div class="card bg-warning text-white mb-4">
                 <div class="card-body">Muito Importante</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Muito Importante"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Muito Importante" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
@@ -38,7 +38,7 @@
             <div class="card bg-success text-white mb-4">
                 <div class="card-body">Importante</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Importante"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Importante" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
@@ -49,7 +49,7 @@
             <div class="card bg-primary text-white mb-4">
                 <div class="card-body">Ainda pode esperar</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Ainda pode esperar"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Ainda pode esperar" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
@@ -59,16 +59,9 @@
     </div>
     <div class="card mb-4">
         <div class="card-body">
-
-            <a asp-action="Create" class="btn btn-success"><i class="fa-solid fa-plus"></i></a>
-            <br />
-            <br />
             <table class="table">
                 <thead>
                     <tr>
-                        <th>
-                            @Html.DisplayNameFor(model => model.UtilizadorId)
-                        </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Nome)
                         </th>
@@ -87,16 +80,18 @@
                         <th>
                             @Html.DisplayNameFor(model => model.DataLimite)
                         </th>
-                        <th></th>
+                        <th>
+                            Editar | Excluir
+                        </th>
+                        <th>
+                            Concluir
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.UtilizadorId)
-                            </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Nome)
                             </td>
@@ -116,8 +111,17 @@
                                 @Html.DisplayFor(modelItem => item.DataLimite)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning"><i class="fa-solid fa-pencil"></i></a> |
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-1"><i class="fa-solid fa-pencil"></i></a> |
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger ms-1"><i class="fa-solid fa-trash"></i></a>
+                            </td>
+                            <td>
+                                @if (item.Estado == "Pendente")
+                                {
+                                    <form asp-action="MarcarConcluida" method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     }

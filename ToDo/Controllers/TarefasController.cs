@@ -1,29 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Data;
 using ToDo.Models;
+using System.Security.Claims;
 
 namespace ToDo.Controllers
 {
+    [Authorize]
     public class TarefasController : Controller
     {
         private readonly ToDoContext _context;
+        private readonly UserManager<Utilizador> _userManager;
 
-        public TarefasController(ToDoContext context)
+        public TarefasController(ToDoContext context, UserManager<Utilizador> userManager)
         {
             _context = context;
+            _userManager = userManager;
+        }
+
+        private void PopulatePrioridadeDropDownList(object? selectedPrioridade = null)
+        {
+            var prioridades = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Urgente", Text = "Urgente" },
+                new SelectListItem { Value = "Muito Importante", Text = "Muito Importante" },
+                new SelectListItem { Value = "Importante", Text = "Importante" },
+                new SelectListItem { Value = "Ainda pode esperar", Text = "Ainda pode esperar" }
+            };
+            ViewBag.Prioridades = new SelectList(prioridades, "Value", "Text", selectedPrioridade);
+        }
+
+        private void PopulateEstadoDropDownList(object? selectedEstado = null)
+        {
+            var estados = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Pendente", Text = "Pendente" },
+                new SelectListItem { Value = "Concluída", Text = "Concluída" }
+            };
+            ViewBag.Estados = new SelectList(estados, "Value", "Text", selectedEstado);
         }
 
         // GET: Tarefas
         public async Task<IActionResult> Index()
         {
+            var userId = _userManager.GetUserId(User);
             var tarefas = await _context.Tarefa
                 .Include(t => t.Categoria) // Inclui a categoria relacionada
+                .Where(t => t.UtilizadorId == userId) // Filtra as tarefas do utilizador autenticado
                 .ToListAsync();
             return View(tarefas);
         }
@@ -36,9 +62,10 @@ namespace ToDo.Controllers
                 return NotFound();
             }
 
+            var userId = _userManager.GetUserId(User);
             var tarefa = await _context.Tarefa
                 .Include(t => t.Categoria)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.UtilizadorId == userId);
             if (tarefa == null)
             {
                 return NotFound();
@@ -51,14 +78,23 @@ namespace ToDo.Controllers
         public IActionResult Create()
         {
             ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
+            PopulatePrioridadeDropDownList();
+            PopulateEstadoDropDownList();
             return View();
         }
 
         // POST: Tarefas/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UtilizadorId,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
         {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            tarefa.UtilizadorId = userId;
+
             if (ModelState.IsValid)
             {
                 _context.Add(tarefa);
@@ -66,8 +102,9 @@ namespace ToDo.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Recarregar categorias em caso de erro de validação
             ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
+            PopulatePrioridadeDropDownList(tarefa.Prioridade);
+            PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
         }
 
@@ -79,29 +116,37 @@ namespace ToDo.Controllers
                 return NotFound();
             }
 
+            var userId = _userManager.GetUserId(User);
             var tarefa = await _context.Tarefa.FindAsync(id);
-            if (tarefa == null)
+            if (tarefa == null || tarefa.UtilizadorId != userId)
             {
-                return NotFound();
+                return Unauthorized();
             }
 
-            // Preencher o ViewBag com as categorias disponíveis
             ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
-
+            PopulatePrioridadeDropDownList(tarefa.Prioridade);
+            PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
         }
 
         // POST: Tarefas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UtilizadorId,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Prioridade,Estado,CategoriaId,DataCriacao,DataLimite")] Tarefa tarefa)
         {
             if (id != tarefa.Id)
             {
                 return NotFound();
             }
+
+            var userId = _userManager.GetUserId(User);
+            var tarefaExistente = await _context.Tarefa.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+            if (tarefaExistente == null || tarefaExistente.UtilizadorId != userId)
+            {
+                return Unauthorized();
+            }
+
+            tarefa.UtilizadorId = userId;
 
             if (ModelState.IsValid)
             {
@@ -124,9 +169,9 @@ namespace ToDo.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            // Recarregar o ViewBag caso haja erro de validação
             ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
-
+            PopulatePrioridadeDropDownList(tarefa.Prioridade);
+            PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
         }
 
@@ -138,9 +183,10 @@ namespace ToDo.Controllers
                 return NotFound();
             }
 
+            var userId = _userManager.GetUserId(User);
             var tarefa = await _context.Tarefa
                 .Include(t => t.Categoria)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.UtilizadorId == userId);
             if (tarefa == null)
             {
                 return NotFound();
@@ -154,13 +200,37 @@ namespace ToDo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var userId = _userManager.GetUserId(User);
             var tarefa = await _context.Tarefa.FindAsync(id);
-            if (tarefa != null)
+            if (tarefa == null || tarefa.UtilizadorId != userId)
             {
-                _context.Tarefa.Remove(tarefa);
+                return NotFound();
             }
 
+            _context.Tarefa.Remove(tarefa);
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Tarefas/MarcarConcluida/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarcarConcluida(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var tarefa = await _context.Tarefa.FindAsync(id);
+            if (tarefa == null || tarefa.UtilizadorId != userId)
+            {
+                return NotFound();
+            }
+
+            if (tarefa.Estado != "Concluída")
+            {
+                tarefa.Estado = "Concluída";
+                _context.Update(tarefa);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 
