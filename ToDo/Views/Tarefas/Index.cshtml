@@ -13,27 +13,17 @@
     </ol>
     <div class="row">
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-danger text-white mb-4">
-                <div class="card-body">Urgente</div>
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">Ainda pode esperar</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Urgente" && t.Estado == "Pendente"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Ainda pode esperar" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white mb-4">
-                <div class="card-body">Muito Importante</div>
-                <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Muito Importante" && t.Estado == "Pendente"))
-                    {
-                        <div class="mt-1">@tarefa.Nome</div>
-                    }
-                </div>
-            </div>
-        </div>
+
         <div class="col-xl-3 col-md-6">
             <div class="card bg-success text-white mb-4">
                 <div class="card-body">Importante</div>
@@ -45,11 +35,24 @@
                 </div>
             </div>
         </div>
+
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white mb-4">
-                <div class="card-body">Ainda pode esperar</div>
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">Muito Importante</div>
                 <div class="card-footer align-items-center justify-content-between">
-                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Ainda pode esperar" && t.Estado == "Pendente"))
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Muito Importante" && t.Estado == "Pendente"))
+                    {
+                        <div class="mt-1">@tarefa.Nome</div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-danger text-white mb-4">
+                <div class="card-body">Urgente</div>
+                <div class="card-footer align-items-center justify-content-between">
+                    @foreach (var tarefa in Model.Where(t => t.Prioridade == "Urgente" && t.Estado == "Pendente"))
                     {
                         <div class="mt-1">@tarefa.Nome</div>
                     }
@@ -57,9 +60,10 @@
             </div>
         </div>
     </div>
+
     <div class="card mb-4">
         <div class="card-body">
-            <table class="table">
+            <table id="datatablesSimple">
                 <thead>
                     <tr>
                         <th>

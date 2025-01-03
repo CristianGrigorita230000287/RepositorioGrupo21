@@ -8,6 +8,7 @@
     var apelido = User?.Claims.FirstOrDefault(c => c.Type == "Apelido")?.Value;
     var isAdmin = User.IsInRole("Admin");
     var isCliente = User.IsInRole("Cliente");
+    var isConvidado = User.IsInRole("Convidado");
 }
 
 @{
@@ -27,6 +28,58 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="~/css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .hero {
+            background: #f4f4f4;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+            .hero h1 {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .hero button {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+                color: white;
+                background: #4CAF50;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .hero button:hover {
+                    background: #45a049;
+                }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .feature {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 1rem;
+            width: 300px;
+            text-align: center;
+        }
+
+            .feature h3 {
+                color: #4CAF50;
+            }
+    </style>
 </head>
 
 <body class="sb-nav-fixed">
@@ -59,10 +112,7 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Principal</div>
-                        <a class="nav-link" href="/Home/Vista_Geral">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Vista Geral
-                        </a>
+
                         @if (isAdmin)
                         {
                             <a class="nav-link" href="/Admin/Dashboard">
@@ -72,6 +122,18 @@
                             <a class="nav-link" href="/Admin/GerirUtilizadores">
                                 <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
                                 Gerir Utilizadores
+                            </a>
+                            <a asp-controller="Tarefas" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Tarefas
+                            </a>
+                            <a asp-controller="Categorias" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Categorias
+                            </a>
+                            <a asp-controller="Comentarios" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Comentarios
                             </a>
                         }
                         @if (isCliente)
@@ -85,6 +147,8 @@
                                 Criar Tarefa
                             </a>
                         }
+
+
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
@@ -101,42 +165,66 @@
             </nav>
         </div>
         <div id="layoutSidenav">
-            <main>
-                <div class="container-fluid px-4">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <h1 class="mt-4">Seja bem vindo, @($"{primeiroNome} {apelido}")!</h1>
-                        @if (isAdmin)
+            <div class="container-fluid px-4">
+                <br />
+                <br />
+                <div class="card mb-4">
+                    <div class="card-body">
+
+
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <div class="mt-4">
-                                <a class="btn btn-primary mb-2" href="/Admin/Dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><br />
-                                <a class="btn btn-primary" href="/Admin/GerirUtilizadores"><i class="fas fa-users-cog"></i> Gerir Utilizadores</a>
-                            </div>
+                            <h1 class="mt-4">Bem Vindo, @($"{primeiroNome} {apelido}")!</h1>
+                            @if (isAdmin)
+                            {
+                                <div class="mt-4">
+                                    <a class="btn btn-primary mb-2" href="/Admin/Dashboard"><i class="fas fa-chart-line"></i> Dashboard</a><br />
+                                    <a class="btn btn-primary" href="/Admin/GerirUtilizadores"><i class="fas fa-users-cog"></i> Gerir Utilizadores</a>
+                                </div>
+                            }
+                            @if (isCliente)
+                            {
+                                <div class="mt-4">
+                                    <a class="btn btn-primary mb-2" href="/Tarefas/Index"><i class="fas fa-tasks"></i> Visualizar Tarefas</a><br />
+                                    <a class="btn btn-primary" href="/Tarefas/Create"><i class="fas fa-plus"></i> Criar Tarefa</a>
+                                </div>
+                            }
                         }
-                        @if (isCliente)
+                        else
                         {
-                            <div class="mt-4">
-                                <a class="btn btn-primary mb-2" href="/Tarefas/Index"><i class="fas fa-tasks"></i> Visualizar Tarefas</a><br />
-                                <a class="btn btn-primary" href="/Tarefas/Create"><i class="fas fa-plus"></i> Criar Tarefa</a>
-                            </div>
+                            <section class="hero">
+                                <h1>Gerencie Suas Tarefas com Facilidade</h1>
+                                <p>Crie, organize e acompanhe suas tarefas diárias de forma eficiente.</p>
+                                <button>Comece Agora</button>
+                            </section>
+                            <section id="features" class="features">
+                                <div class="feature">
+                                    <h3>Organização Simplificada</h3>
+                                    <p>Crie e categorize suas tarefas para manter tudo sob controle.</p>
+                                </div>
+                                <div class="feature">
+                                    <h3>Progresso Visível</h3>
+                                    <p>Acompanhe o andamento de suas tarefas com facilidade.</p>
+                                </div>
+                                <div class="feature">
+                                    <h3>Área Administrativa</h3>
+                                    <p>Controle usuários e visualize estatísticas detalhadas.</p>
+                                </div>
+                            </section>
                         }
-                    }
-                    else
-                    {
-                        <h1 class="mt-4">Seja bem vindo, <br />crie uma nova conta <a href="/Conta/Registar">aqui</a> para utilizar a nossa To-Do List!</h1>
-                        <h1 class="mt-1">Ou <a href="/Conta/Login">faça login</a> se já possuir uma.</h1>
-                    }
+                    </div>
+
                 </div>
-            </main>
+
+            </div>
         </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
-            crossorigin="anonymous"></script>
-    <script src="~/js/scripts.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
-            crossorigin="anonymous"></script>
-    <script src="~/js/datatable.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+                crossorigin="anonymous"></script>
+        <script src="~/js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"
+                crossorigin="anonymous"></script>
+        <script src="~/js/datatable.js"></script>
 </body>
 
 </html>

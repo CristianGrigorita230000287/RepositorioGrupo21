@@ -25,10 +25,10 @@ namespace ToDo.Controllers
         {
             var prioridades = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Urgente", Text = "Urgente" },
-                new SelectListItem { Value = "Muito Importante", Text = "Muito Importante" },
+                new SelectListItem { Value = "Ainda pode esperar", Text = "Ainda pode esperar" },
                 new SelectListItem { Value = "Importante", Text = "Importante" },
-                new SelectListItem { Value = "Ainda pode esperar", Text = "Ainda pode esperar" }
+                new SelectListItem { Value = "Muito Importante", Text = "Muito Importante" },
+                new SelectListItem { Value = "Urgente", Text = "Urgente" }
             };
             ViewBag.Prioridades = new SelectList(prioridades, "Value", "Text", selectedPrioridade);
         }
