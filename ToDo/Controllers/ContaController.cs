@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ToDo.Models;
 using ToDo.ViewModels;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ToDo.Controllers
 {

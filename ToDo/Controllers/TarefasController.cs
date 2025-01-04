@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ToDo.Data;
 using ToDo.Models;
-using System.Security.Claims;
 
 namespace ToDo.Controllers
 {
@@ -43,13 +42,26 @@ namespace ToDo.Controllers
             ViewBag.Estados = new SelectList(estados, "Value", "Text", selectedEstado);
         }
 
+        private void PopulateCategoriasDropDownList(string userId, object? selectedCategoria = null)
+        {
+            var categorias = _context.Categoria
+                .Where(c => c.UtilizadorId == userId)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Nome
+                }).ToList();
+
+            ViewBag.Categorias = new SelectList(categorias, "Value", "Text", selectedCategoria);
+        }
+
         // GET: Tarefas
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
             var tarefas = await _context.Tarefa
                 .Include(t => t.Categoria) // Inclui a categoria relacionada
-                .Where(t => t.UtilizadorId == userId) // Filtra as tarefas do utilizador autenticado
+                .Where(t => t.UtilizadorId == userId && t.Estado == "Pendente") // Filtra as tarefas pendentes do utilizador autenticado
                 .ToListAsync();
             return View(tarefas);
         }
@@ -77,7 +89,12 @@ namespace ToDo.Controllers
         // GET: Tarefas/Create
         public IActionResult Create()
         {
-            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+            PopulateCategoriasDropDownList(userId);
             PopulatePrioridadeDropDownList();
             PopulateEstadoDropDownList();
             return View();
@@ -102,7 +119,7 @@ namespace ToDo.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome");
+            PopulateCategoriasDropDownList(userId, tarefa.CategoriaId);
             PopulatePrioridadeDropDownList(tarefa.Prioridade);
             PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
@@ -123,7 +140,7 @@ namespace ToDo.Controllers
                 return Unauthorized();
             }
 
-            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
+            PopulateCategoriasDropDownList(userId!, tarefa.CategoriaId);
             PopulatePrioridadeDropDownList(tarefa.Prioridade);
             PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
@@ -169,7 +186,7 @@ namespace ToDo.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Categorias = new SelectList(_context.Categoria, "Id", "Nome", tarefa.CategoriaId);
+            PopulateCategoriasDropDownList(userId!, tarefa.CategoriaId);
             PopulatePrioridadeDropDownList(tarefa.Prioridade);
             PopulateEstadoDropDownList(tarefa.Estado);
             return View(tarefa);
