@@ -1,17 +1,40 @@
-﻿@model IEnumerable<ToDo.Models.Utilizador>
-
+﻿@model IEnumerable<ToDo.ViewModels.UtilizadorViewModel>
 
 <div class="container-fluid px-4">
-    <br />
-    <br />
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <h1>Gerir Utilizadores</h1>
+    </div>
+    <ol class="breadcrumb mb-4">
+    </ol>
     <div class="card mb-4">
         <div class="card-body">
-            <h2>Gerenciar Usuários</h2>
-            <table class="table">
+            <table id="datatablesSimple">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Email</th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.NomeSortParm">Nome</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.EmailSortParm">Email</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.TotalTarefasSortParm">Total de Tarefas</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.TarefasConcluidasSortParm">Tarefas Concluídas</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.TarefasPendentesSortParm">Tarefas Pendentes</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.DataCriacaoSortParm">Data de Criação</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.UltimoLoginSortParm">Último Login</a>
+                        </th>
+                        <th>
+                            <a asp-action="GerirUtilizadores" asp-route-sortOrder="@ViewBag.DiasSemLoginSortParm">Dias sem Login</a>
+                        </th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -19,13 +42,16 @@
                     @foreach (var user in Model)
                     {
                         <tr>
-                            <td>@user.PrimeiroNome @user.Apelido</td>
+                            <td>@user.Nome</td>
                             <td>@user.Email</td>
+                            <td>@user.TotalTarefas</td>
+                            <td>@user.TarefasConcluidas</td>
+                            <td>@user.TarefasPendentes</td>
+                            <td>@user.DataCriacao.ToString("dd/MM/yyyy")</td>
+                            <td>@user.UltimoLogin.ToString("dd/MM/yyyy")</td>
+                            <td>@user.DiasSemLogin</td>
                             <td>
-                                <form asp-action="DeleteUser" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="@user.Id" />
-                                    <button type="submit" class="btn btn-danger">Deletar</button>
-                                </form>
+                                <a asp-action="DeleteUser" asp-route-id="@user.Id" class="btn btn-danger"><i class="fa-solid fa-trash"></i></a>
                             </td>
                         </tr>
                     }
@@ -34,3 +60,9 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

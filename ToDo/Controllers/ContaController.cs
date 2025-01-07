@@ -31,6 +31,12 @@ namespace ToDo.Controllers
 
                 if (resultado.Succeeded)
                 {
+                    var utilizador = await userManager.FindByEmailAsync(model.Email);
+                    if (utilizador != null)
+                    {
+                        utilizador.UltimoLogin = DateTime.Now;
+                        await userManager.UpdateAsync(utilizador);
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -57,7 +63,9 @@ namespace ToDo.Controllers
                     PrimeiroNome = model.PrimeiroNome,
                     Apelido = model.Apelido,
                     Email = model.Email,
-                    UserName = model.Email
+                    UserName = model.Email,
+                    DataCriacao = DateTime.Now,
+                    UltimoLogin = DateTime.Now
                 };
 
                 var resultado = await userManager.CreateAsync(utilizador, model.Password);
