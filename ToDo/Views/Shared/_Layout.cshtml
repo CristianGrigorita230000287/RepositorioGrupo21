@@ -62,23 +62,42 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
                                 Gerir Utilizadores
                             </a>
+                            <a asp-controller="Tarefas" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tasks"></i></div>
+                                Visualizar Tarefas
+                            </a>
+                            <a class="nav-link" href="/Tarefas/Create">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                Criar Tarefa
+                            </a>
+                            <a asp-controller="Historico" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                                Histórico de Tarefas
+                            </a>
+                            <a asp-controller="Categorias" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
+                                Categorias
+                            </a>
                         }
-                        <a asp-controller="Tarefas" asp-action="Index" class="nav-link ">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tasks"></i></div>
-                            Tarefas
-                        </a>
-                        <a asp-controller="Historico" asp-action="Index" class="nav-link ">
-                            <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
-                            Histórico de Tarefas
-                        </a>
-                        <a asp-controller="Categorias" asp-action="Index" class="nav-link ">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
-                            Categorias
-                        </a>
-                        <a asp-controller="Comentarios" asp-action="Index" class="nav-link ">
-                            <div class="sb-nav-link-icon"><i class="fas fa-comments"></i></div>
-                            Comentarios
-                        </a>
+                        @if (isCliente)
+                        {
+                            <a asp-controller="Tarefas" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tasks"></i></div>
+                                Visualizar Tarefas
+                            </a>
+                            <a class="nav-link" href="/Tarefas/Create">
+                                <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                Criar Tarefa
+                            </a>
+                            <a asp-controller="Historico" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-history"></i></div>
+                                Histórico de Tarefas
+                            </a>
+                            <a asp-controller="Categorias" asp-action="Index" class="nav-link ">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
+                                Categorias
+                            </a>
+                        }
 
                     </div>
                 </div>
@@ -106,9 +125,9 @@
                     <div class="d-flex align-items-center justify-content-between small">
                         <div class="text-muted">Copyright &copy; ToDo List 24/25</div>
                         <div>
-                            <a href="#">Privacy Policy</a>
+                            <a asp-controller="Home" asp-action="Privacy">Política de Privacidade</a>
                             &middot;
-                            <a href="#">Terms &amp; Conditions</a>
+                            <a asp-controller="Home" asp-action="Termos">Termos de Uso</a>
                         </div>
                     </div>
                 </div>

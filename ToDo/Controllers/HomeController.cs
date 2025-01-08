@@ -19,8 +19,12 @@ namespace ToDo.Controllers
             return View();
         }
 
-        [Authorize]
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult Termos()
         {
             return View();
         }

@@ -11,10 +11,7 @@ namespace ToDo.Data
         }
 
         public DbSet<ToDo.Models.Tarefa> Tarefa { get; set; } = default!;
-        public DbSet<ToDo.Models.Comentario> Comentario { get; set; } = default!;
         public DbSet<ToDo.Models.Categoria> Categoria { get; set; } = default!;
-        public DbSet<ToDo.Models.Historia> Historia { get; set; } = default!;
-        public DbSet<ToDo.Models.Estatistica> Estatistica { get; set; } = default!;
         public DbSet<ToDo.Models.Utilizador> Utilizador { get; set; } = default!;
     }
 }
