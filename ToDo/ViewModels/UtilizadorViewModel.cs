@@ -11,5 +11,6 @@
         public DateTime DataCriacao { get; set; }
         public DateTime UltimoLogin { get; set; }
         public int DiasSemLogin { get; set; }
+        public string Role { get; set; }
     }
 }

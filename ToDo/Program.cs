@@ -35,9 +35,11 @@ namespace ToDo
                 .AddEntityFrameworkStores<ToDoContext>()
                 .AddDefaultTokenProviders();
 
+            // Adiciona o serviço de autorização para as roles:
             builder.Services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("RequireGestorRole", policy => policy.RequireRole("Gestor"));
                 options.AddPolicy("RequireClienteRole", policy => policy.RequireRole("Cliente"));
             });
 
@@ -71,12 +73,13 @@ namespace ToDo
             name: "default",
             pattern: "{controller=Home}/{action=Perfil}/{id?}");
 
+            // Criação de roles:
             using (var scope = app.Services.CreateScope())
             {
                 var roleManager =
                     scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                var roles = new[] { "Admin", "Cliente" };
+                var roles = new[] { "Admin", "Gestor", "Cliente" };
 
                 foreach (var role in roles)
                 {
@@ -85,11 +88,13 @@ namespace ToDo
                 }
             }
 
+            // Criação do utilizador Admin:
             using (var scope = app.Services.CreateScope())
             {
                 var userManager =
                     scope.ServiceProvider.GetRequiredService<UserManager<Utilizador>>();
 
+                // Credenciais do utilizador Admin:
                 string primeiroNome = "Admin";
                 string apelido = "Geral";
                 string email = "admin@geral.com";
@@ -97,6 +102,7 @@ namespace ToDo
                 string dataCriacao = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
                 string ultimoLogin = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
+                // Verifica se o utilizador Admin já existe:
                 if (await userManager.FindByEmailAsync(email) == null)
                 {
                     var utilizador = new Utilizador();

@@ -8,7 +8,7 @@ using ToDo.ViewModels;
 
 namespace ToDo.Controllers
 {
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Roles = "Admin,Gestor")]
     public class AdminController : Controller
     {
         private readonly ToDoContext _context;
@@ -41,27 +41,31 @@ namespace ToDo.Controllers
             var utilizadores = await _context.Utilizador.ToListAsync();
             var adminEmail = "admin@geral.com";
 
-            var utilizadorViewModels = utilizadores
-                .Where(u => u.Email != adminEmail)
-                .Select(u => new UtilizadorViewModel
+            var utilizadorViewModels = new List<UtilizadorViewModel>();
+
+            foreach (var utilizador in utilizadores)
             {
-                Id = u.Id,
-                Nome = $"{u.PrimeiroNome} {u.Apelido}",
-                Email = u.Email,
-                TotalTarefas = _context.Tarefa.Count(t => t.UtilizadorId == u.Id),
-                TarefasConcluidas = _context.Tarefa.Count(t => t.UtilizadorId == u.Id && t.Estado == "Concluída"),
-                TarefasPendentes = _context.Tarefa.Count(t => t.UtilizadorId == u.Id && t.Estado == "Pendente"),
-                DataCriacao = u.DataCriacao,
-                UltimoLogin = u.UltimoLogin,
-                DiasSemLogin = (DateTime.Now - u.UltimoLogin).Days
-            }).ToList();
+                if (utilizador.Email != adminEmail)
+                {
+                    var roles = await _userManager.GetRolesAsync(utilizador);
+                    var role = roles.FirstOrDefault() ?? "Cliente";
+
+                    utilizadorViewModels.Add(new UtilizadorViewModel
+                    {
+                        Id = utilizador.Id,
+                        Nome = $"{utilizador.PrimeiroNome} {utilizador.Apelido}",
+                        Email = utilizador.Email,
+                        DataCriacao = utilizador.DataCriacao,
+                        UltimoLogin = utilizador.UltimoLogin,
+                        DiasSemLogin = (DateTime.Now - utilizador.UltimoLogin).Days,
+                        Role = role
+                    });
+                }
+            }
 
             // Ordenação:
             ViewBag.NomeSortParm = String.IsNullOrEmpty(sortOrder) ? "nome_desc" : "";
             ViewBag.EmailSortParm = sortOrder == "Email" ? "email_desc" : "Email";
-            ViewBag.TotalTarefasSortParm = sortOrder == "TotalTarefas" ? "totalTarefas_desc" : "TotalTarefas";
-            ViewBag.TarefasConcluidasSortParm = sortOrder == "TarefasConcluidas" ? "tarefasConcluidas_desc" : "TarefasConcluidas";
-            ViewBag.TarefasPendentesSortParm = sortOrder == "TarefasPendentes" ? "tarefasPendentes_desc" : "TarefasPendentes";
             ViewBag.DataCriacaoSortParm = sortOrder == "DataCriacao" ? "dataCriacao_desc" : "DataCriacao";
             ViewBag.UltimoLoginSortParm = sortOrder == "UltimoLogin" ? "ultimoLogin_desc" : "UltimoLogin";
             ViewBag.DiasSemLoginSortParm = sortOrder == "DiasSemLogin" ? "diasSemLogin_desc" : "DiasSemLogin";
@@ -71,12 +75,6 @@ namespace ToDo.Controllers
                 "nome_desc" => utilizadorViewModels.OrderByDescending(u => u.Nome).ToList(),
                 "Email" => utilizadorViewModels.OrderBy(u => u.Email).ToList(),
                 "email_desc" => utilizadorViewModels.OrderByDescending(u => u.Email).ToList(),
-                "TotalTarefas" => utilizadorViewModels.OrderBy(u => u.TotalTarefas).ToList(),
-                "totalTarefas_desc" => utilizadorViewModels.OrderByDescending(u => u.TotalTarefas).ToList(),
-                "TarefasConcluidas" => utilizadorViewModels.OrderBy(u => u.TarefasConcluidas).ToList(),
-                "tarefasConcluidas_desc" => utilizadorViewModels.OrderByDescending(u => u.TarefasConcluidas).ToList(),
-                "TarefasPendentes" => utilizadorViewModels.OrderBy(u => u.TarefasPendentes).ToList(),
-                "tarefasPendentes_desc" => utilizadorViewModels.OrderByDescending(u => u.TarefasPendentes).ToList(),
                 "DataCriacao" => utilizadorViewModels.OrderBy(u => u.DataCriacao).ToList(),
                 "dataCriacao_desc" => utilizadorViewModels.OrderByDescending(u => u.DataCriacao).ToList(),
                 "UltimoLogin" => utilizadorViewModels.OrderBy(u => u.UltimoLogin).ToList(),
@@ -92,11 +90,13 @@ namespace ToDo.Controllers
         // GET: Admin/DeleteUser/5
         public async Task<IActionResult> DeleteUser(string? id)
         {
+            // Verifica se o ID é nulo:
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Procura o utilizador pelo ID:
             var utilizador = await _context.Utilizador
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (utilizador == null)
@@ -104,10 +104,12 @@ namespace ToDo.Controllers
                 return NotFound();
             }
 
+            // Conta o total de tarefas, tarefas completadas e tarefas pendentes do utilizador:
             var totalTarefas = await _context.Tarefa.CountAsync(t => t.UtilizadorId == id);
             var tarefasCompletadas = await _context.Tarefa.CountAsync(t => t.UtilizadorId == id && t.Estado == "Concluída");
             var tarefasPendentes = totalTarefas - tarefasCompletadas;
 
+            // Adiciona as variáveis à ViewBag:
             ViewBag.TotalTarefas = totalTarefas;
             ViewBag.TarefasCompletadas = tarefasCompletadas;
             ViewBag.TarefasPendentes = tarefasPendentes;
@@ -120,22 +122,129 @@ namespace ToDo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteUserConfirmed(string id)
         {
+            // Procura o utilizador pelo ID:
             var utilizador = await _userManager.FindByIdAsync(id);
             if (utilizador != null)
             {
-                // Excluir tarefas associadas ao usuário:
+                // Verifica se o utilizador é um Gestor e se o utilizador atual é Admin:
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
+                var currentUserIsAdmin = currentUserRoles.Contains("Admin");
+
+                if (await _userManager.IsInRoleAsync(utilizador, "Gestor") && !currentUserIsAdmin)
+                {
+                    return Forbid();
+                }
+
+                // Exclui as tarefas associadas ao usuário:
                 var tarefas = _context.Tarefa.Where(t => t.UtilizadorId == id);
                 _context.Tarefa.RemoveRange(tarefas);
 
-                // Excluir categorias associadas ao usuário:
+                // Exclui as categorias associadas ao usuário:
                 var categorias = _context.Categoria.Where(c => c.UtilizadorId == id);
                 _context.Categoria.RemoveRange(categorias);
 
-                // Salvar alterações no banco de dados:
+                // Salva as alterações no banco de dados:
                 await _context.SaveChangesAsync();
 
-                // Excluir o usuário:
+                // Exclui o usuário:
                 var result = await _userManager.DeleteAsync(utilizador);
+                if (result.Succeeded)
+                {
+                    // Se o resultado for bem sucedido, redireciona para a página de gerir utilizadores:
+                    return RedirectToAction(nameof(GerirUtilizadores));
+                }
+                else
+                {
+                    // Adiciona os erros ao ModelState:
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+            return RedirectToAction(nameof(GerirUtilizadores));
+        }
+
+        // GET: Admin/PromoverParaGestor/5
+        public async Task<IActionResult> PromoverParaGestor(string? id)
+        {
+            // Verifica se o ID é nulo:
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Procura o utilizador pelo ID:
+            var utilizador = await _context.Utilizador
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (utilizador == null)
+            {
+                return NotFound();
+            }
+
+            // Retorna a view com o utilizador:
+            return View(utilizador);
+        }
+
+        // POST: Admin/PromoverParaGestor/5
+        [HttpPost, ActionName("PromoverParaGestor")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PromoverParaGestorConfirmed(string id)
+        {
+            // Procura o utilizador pelo ID:
+            var utilizador = await _userManager.FindByIdAsync(id);
+            if (utilizador != null)
+            {
+                // Adiciona o utilizador à role Gestor:
+                var removerRoleCliente = await _userManager.RemoveFromRoleAsync(utilizador, "Cliente");
+                var result = await _userManager.AddToRoleAsync(utilizador, "Gestor");
+                if (result.Succeeded)
+                {
+                    // Redireciona para a página de gerir utilizadores:
+                    return RedirectToAction(nameof(GerirUtilizadores));
+                }
+                else
+                {
+                    // Adiciona os erros ao ModelState:
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
+            }
+            // Redireciona para a página de gerir utilizadores:
+            return RedirectToAction(nameof(GerirUtilizadores));
+        }
+
+        // GET: Admin/RebaixarParaCliente/5
+        public async Task<IActionResult> RebaixarParaCliente(string? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var utilizador = await _context.Utilizador
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (utilizador == null)
+            {
+                return NotFound();
+            }
+
+            return View(utilizador);
+        }
+
+        // POST: Admin/RebaixarParaCliente/5
+        [HttpPost, ActionName("RebaixarParaCliente")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RebaixarParaClienteConfirmed(string id)
+        {
+            var utilizador = await _userManager.FindByIdAsync(id);
+            if (utilizador != null)
+            {
+                var removerRoleGestor = await _userManager.RemoveFromRoleAsync(utilizador, "Gestor");
+                var result = await _userManager.AddToRoleAsync(utilizador, "Cliente");
                 if (result.Succeeded)
                 {
                     return RedirectToAction(nameof(GerirUtilizadores));
